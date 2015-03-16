@@ -28,7 +28,7 @@ module CachedCounts
 
     def uncached_count
       @scope.count_without_caching(*@args).tap do |count|
-        Rails.cache.write(current_key, count)
+        Rails.cache.write(current_key, count, expires_in: CachedCounts.config.cache_duration)
         Rails.cache.write(list_key, all_keys + [current_key])
       end
     end
