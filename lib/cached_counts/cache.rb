@@ -12,7 +12,7 @@ module CachedCounts
 
     # Clear out any count caches which have SQL that includes the scopes table
     def clear
-      invalid_keys = all_keys.select { |key| key.include?(@scope.table_name.downcase) }
+      invalid_keys = all_keys.select { |key| key.include?("::#{@scope.table_name.downcase}::") }
       invalid_keys.each { |key| Rails.cache.delete(key) }
 
       Rails.cache.write(list_key, all_keys - invalid_keys)
@@ -21,9 +21,9 @@ module CachedCounts
     private
 
     def cached_count
-      if all_keys.include?(current_key)
-        Rails.cache.fetch(current_key)
-      end
+      Rails.cache.fetch(current_key)
+      # if all_keys.include?(current_key)
+      # end
     end
 
     def uncached_count
@@ -42,7 +42,7 @@ module CachedCounts
     end
 
     def current_key
-      "cached_counts::#{@scope.to_sql.downcase}::#{@args}"
+      "cached_counts::#{@scope.table_name.downcase}::#{Digest::MD5.hexdigest(@scope.to_sql.downcase)}::#{@args}"
     end
   end
 end
