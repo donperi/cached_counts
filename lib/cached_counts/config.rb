@@ -21,7 +21,7 @@ module CachedCounts
     attr_accessor :cache_duration
 
     def initialize
-      @cache_duration = 30.minutes
+      @cache_duration = 1800
     end
   end
 end
